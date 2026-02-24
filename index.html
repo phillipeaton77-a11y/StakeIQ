@@ -1118,31 +1118,27 @@
 
       document.getElementById('resultPanel').classList.remove('visible');
 
-      const prompt = buildPrompt(betData);
+      const prompt = `Please analyse this bet:
+Sport: ${betData.sport}
+Market: ${betData.market}
+Event: ${betData.event}
+Selection: ${betData.selection}
+Odds: ${betData.odds}
+Stake: £${betData.stake}
+Bookmaker: ${betData.bookmaker}
+Additional context: ${betData.context || 'None provided'}`;
 
       try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        const response = await fetch('/api/analyse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            system: `You are StakeIQ, an expert sports betting analyst. You provide sharp, data-informed bet analysis for serious bettors.
-You must respond ONLY in this exact JSON format, no other text:
-{
-  "valueRating": "Good Value | Fair Value | Poor Value | Overpriced",
-  "riskLevel": "Low | Medium | High | Very High",
-  "breakdown": "2-3 sentences analysing the bet from a value perspective, referencing the odds and market",
-  "risks": "2-3 sentences covering the key risks to this bet landing",
-  "verdict": "One sharp, decisive sentence. Be honest, not promotional."
-}`,
-            messages: [{ role: 'user', content: prompt }]
-          })
+          body: JSON.stringify({ prompt })
         });
 
-        const data = await response.json();
-        const text = data.content[0].text;
-        const result = JSON.parse(text.replace(/```json|```/g, '').trim());
+        const result = await response.json();
+
+        if (result.error) throw new Error(result.error);
+
         displayResult(result);
 
         if (!hasUsedFree) {
@@ -1157,18 +1153,6 @@ You must respond ONLY in this exact JSON format, no other text:
 
       btn.classList.remove('loading');
       btn.innerHTML = 'Analyse Another Bet →';
-    }
-
-    function buildPrompt(d) {
-      return `Please analyse this bet:
-Sport: ${d.sport}
-Market: ${d.market}
-Event: ${d.event}
-Selection: ${d.selection}
-Odds: ${d.odds}
-Stake: £${d.stake}
-Bookmaker: ${d.bookmaker}
-Additional context: ${d.context || 'None provided'}`;
     }
 
     function displayResult(result) {
