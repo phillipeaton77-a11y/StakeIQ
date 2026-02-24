@@ -127,10 +127,7 @@
       margin-bottom: 8px;
     }
 
-    h1 .line2 {
-      color: var(--accent);
-      display: block;
-    }
+    h1 .line2 { color: var(--accent); display: block; }
 
     .hero-sub {
       font-size: 1.05rem;
@@ -457,6 +454,7 @@
       margin-top: 14px;
     }
 
+    /* ── RESULT PANEL ── */
     .result-panel {
       margin-top: 24px;
       background: var(--bg2);
@@ -504,20 +502,20 @@
 
     .result-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
       margin-bottom: 24px;
     }
 
     .result-block {
       background: var(--bg3);
       border: 1px solid var(--border);
-      padding: 18px 20px;
+      padding: 16px 18px;
     }
 
     .result-block-label {
       font-family: var(--mono);
-      font-size: 0.62rem;
+      font-size: 0.58rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text3);
@@ -526,7 +524,7 @@
 
     .result-block-value {
       font-family: var(--display);
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--text);
       line-height: 1.2;
@@ -578,6 +576,28 @@
       font-weight: 600;
       line-height: 1.4;
       color: var(--text);
+    }
+
+    .alternatives-box {
+      background: rgba(0,230,118,0.04);
+      border: 1px solid rgba(0,230,118,0.15);
+      padding: 18px 24px;
+      margin-top: 12px;
+    }
+
+    .alternatives-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .alternatives-text {
+      font-size: 0.92rem;
+      color: var(--text2);
+      line-height: 1.7;
     }
 
     .how-section {
@@ -785,7 +805,7 @@
       .form-body { padding: 24px 20px; }
       .form-header { padding: 20px; }
       .steps, .pricing-cards { grid-template-columns: 1fr; }
-      .result-grid { grid-template-columns: 1fr; }
+      .result-grid { grid-template-columns: 1fr 1fr; }
       .hero-stats { gap: 24px; }
       footer { flex-direction: column; gap: 16px; text-align: center; }
       .footer-note { text-align: center; }
@@ -953,6 +973,14 @@
               <div class="result-block-label">Risk Level</div>
               <div class="result-block-value" id="riskLevel">—</div>
             </div>
+            <div class="result-block">
+              <div class="result-block-label">Implied Prob.</div>
+              <div class="result-block-value neutral" id="impliedProb">—</div>
+            </div>
+            <div class="result-block">
+              <div class="result-block-label">Confidence</div>
+              <div class="result-block-value" id="confidenceScore">—</div>
+            </div>
           </div>
 
           <div class="result-section">
@@ -961,8 +989,18 @@
           </div>
 
           <div class="result-section">
+            <div class="result-section-title">// Stats & Context</div>
+            <div class="result-analysis" id="statsText"></div>
+          </div>
+
+          <div class="result-section">
             <div class="result-section-title">// Key Risks</div>
             <div class="result-analysis" id="risksText"></div>
+          </div>
+
+          <div class="alternatives-box">
+            <div class="alternatives-label">// Consider Instead</div>
+            <div class="alternatives-text" id="alternativesText"></div>
           </div>
 
           <div class="verdict-box">
@@ -1020,9 +1058,10 @@
         <p class="price-desc">No subscription. No commitment. Pay only when you need it.</p>
         <ul class="price-features">
           <li>Full AI bet breakdown</li>
-          <li>Value & risk assessment</li>
+          <li>Implied probability & confidence score</li>
+          <li>Stats & context</li>
+          <li>Alternative bet suggestions</li>
           <li>Sharp verdict</li>
-          <li>Emailed to you</li>
         </ul>
       </div>
     </div>
@@ -1136,9 +1175,7 @@ Additional context: ${betData.context || 'None provided'}`;
         });
 
         const result = await response.json();
-
         if (result.error) throw new Error(result.error);
-
         displayResult(result);
 
         if (!hasUsedFree) {
@@ -1170,8 +1207,19 @@ Additional context: ${betData.context || 'None provided'}`;
       else if (result.riskLevel === 'Very High' || result.riskLevel === 'High') riskEl.classList.add('negative');
       else riskEl.classList.add('neutral');
 
+      const confEl = document.getElementById('confidenceScore');
+      confEl.textContent = result.confidenceScore;
+      confEl.className = 'result-block-value';
+      const confNum = parseInt(result.confidenceScore);
+      if (confNum >= 7) confEl.classList.add('positive');
+      else if (confNum <= 4) confEl.classList.add('negative');
+      else confEl.classList.add('neutral');
+
+      document.getElementById('impliedProb').textContent = result.impliedProbability;
       document.getElementById('breakdownText').textContent = result.breakdown;
+      document.getElementById('statsText').textContent = result.stats;
       document.getElementById('risksText').textContent = result.risks;
+      document.getElementById('alternativesText').textContent = result.alternatives;
       document.getElementById('verdictText').textContent = result.verdict;
       document.getElementById('resultId').textContent = 'STK-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
