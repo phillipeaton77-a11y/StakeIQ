@@ -256,15 +256,27 @@
       text-transform: uppercase;
     }
 
-    .free-badge {
+    .credits-badge {
       font-family: var(--mono);
       font-size: 0.65rem;
-      background: rgba(0,230,118,0.1);
-      color: var(--green);
-      border: 1px solid rgba(0,230,118,0.3);
       padding: 4px 12px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
+      border: 1px solid rgba(0,230,118,0.3);
+      background: rgba(0,230,118,0.1);
+      color: var(--green);
+    }
+
+    .credits-badge.low {
+      border-color: rgba(255,193,7,0.3);
+      background: rgba(255,193,7,0.1);
+      color: var(--gold);
+    }
+
+    .credits-badge.none {
+      border-color: rgba(255,82,82,0.3);
+      background: rgba(255,82,82,0.1);
+      color: var(--red);
     }
 
     .form-body { padding: 36px; }
@@ -352,8 +364,6 @@
       padding: 18px;
       cursor: pointer;
       transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
     }
 
     .btn-analyze:hover {
@@ -365,6 +375,7 @@
     .btn-analyze:active { transform: translateY(0); }
     .btn-analyze.loading { pointer-events: none; opacity: 0.7; }
 
+    /* ── MODALS ── */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -454,6 +465,68 @@
       margin-top: 14px;
     }
 
+    /* ── PAYMENT MODAL ── */
+    .payment-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .payment-card {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: block;
+      position: relative;
+    }
+
+    .payment-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(0,229,255,0.15);
+    }
+
+    .payment-card.featured {
+      border-color: var(--accent);
+    }
+
+    .payment-card.featured::before {
+      content: 'BEST VALUE';
+      position: absolute;
+      top: -1px; right: -1px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      padding: 3px 8px;
+    }
+
+    .payment-card-price {
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .payment-card-desc {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text2);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .payment-card-detail {
+      font-size: 0.8rem;
+      color: var(--text3);
+    }
+
     /* ── RESULT PANEL ── */
     .result-panel {
       margin-top: 24px;
@@ -538,7 +611,6 @@
       font-size: 0.93rem;
       color: var(--text2);
       line-height: 1.8;
-      white-space: pre-line;
     }
 
     .result-section { margin-bottom: 20px; }
@@ -598,6 +670,26 @@
       font-size: 0.92rem;
       color: var(--text2);
       line-height: 1.7;
+    }
+
+    /* ── SUCCESS BANNER ── */
+    .success-banner {
+      background: rgba(0,230,118,0.1);
+      border: 1px solid rgba(0,230,118,0.3);
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .success-banner.visible { display: flex; }
+
+    .success-banner-text {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      letter-spacing: 0.1em;
     }
 
     .how-section {
@@ -665,9 +757,9 @@
 
     .pricing-cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 2px;
-      max-width: 720px;
+      max-width: 900px;
       margin: 60px auto 0;
       background: var(--border);
     }
@@ -806,6 +898,7 @@
       .form-header { padding: 20px; }
       .steps, .pricing-cards { grid-template-columns: 1fr; }
       .result-grid { grid-template-columns: 1fr 1fr; }
+      .payment-cards { grid-template-columns: 1fr; }
       .hero-stats { gap: 24px; }
       footer { flex-direction: column; gap: 16px; text-align: center; }
       .footer-note { text-align: center; }
@@ -844,16 +937,16 @@
     </p>
     <div class="hero-stats fade-in">
       <div class="stat">
-        <div class="stat-num">15s</div>
-        <div class="stat-label">avg analysis time</div>
+        <div class="stat-num">3</div>
+        <div class="stat-label">free analyses</div>
       </div>
       <div class="stat">
         <div class="stat-num">All</div>
         <div class="stat-label">major sports</div>
       </div>
       <div class="stat">
-        <div class="stat-num">1st</div>
-        <div class="stat-label">analysis free</div>
+        <div class="stat-num">15s</div>
+        <div class="stat-label">avg response</div>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -867,10 +960,15 @@
     <h2 class="section-title">Analyse Your <span>Bet</span></h2>
 
     <div class="form-container">
+
+      <div class="success-banner" id="successBanner">
+        <div class="success-banner-text" id="successBannerText">✓ Payment successful — credits added to your account</div>
+      </div>
+
       <div class="form-card">
         <div class="form-header">
           <div class="form-header-title">Bet Details</div>
-          <div class="free-badge">First Analysis Free</div>
+          <div class="credits-badge" id="creditsBadge">3 Free Left</div>
         </div>
         <div class="form-body">
           <div class="form-row">
@@ -911,7 +1009,7 @@
 
           <div class="form-group">
             <label for="event">Event / Match</label>
-            <input type="text" id="event" placeholder="e.g. Arsenal vs Man City, Premier League — 25 Feb 2025" />
+            <input type="text" id="event" placeholder="e.g. Arsenal vs Man City, Premier League" />
           </div>
 
           <div class="form-group">
@@ -947,7 +1045,7 @@
 
           <div class="form-group">
             <label for="context">Additional Context <span style="color:var(--text3)">(optional)</span></label>
-            <textarea id="context" placeholder="Any extra info: injuries, recent form, reasons you like this bet, weather conditions..."></textarea>
+            <textarea id="context" placeholder="Any extra info: injuries, recent form, reasons you like this bet..."></textarea>
           </div>
 
           <hr class="form-divider" />
@@ -1044,24 +1142,31 @@
       <div class="pricing-card">
         <div class="price-label">Free</div>
         <div class="price-amount">£0</div>
-        <p class="price-desc">Your first full analysis, completely free. No card required.</p>
+        <p class="price-desc">Start with 3 free analyses. No card required.</p>
         <ul class="price-features">
-          <li>One complete bet analysis</li>
+          <li>3 complete analyses</li>
           <li>All sports & markets</li>
           <li>Full breakdown & verdict</li>
-          <li>Delivered instantly</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="price-label">Pay As You Go</div>
+        <div class="price-amount">£1.50<span class="price-per">/ analysis</span></div>
+        <p class="price-desc">No commitment. Pay only when you need it.</p>
+        <ul class="price-features">
+          <li>Single analysis</li>
+          <li>Full AI breakdown</li>
+          <li>Instant delivery</li>
         </ul>
       </div>
       <div class="pricing-card featured">
-        <div class="price-label featured">Pay Per Analysis</div>
-        <div class="price-amount">£1.50<span class="price-per">/ analysis</span></div>
-        <p class="price-desc">No subscription. No commitment. Pay only when you need it.</p>
+        <div class="price-label featured">Best Value</div>
+        <div class="price-amount">£10<span class="price-per">/ 20 analyses</span></div>
+        <p class="price-desc">50p per analysis. Best value for regular bettors.</p>
         <ul class="price-features">
-          <li>Full AI bet breakdown</li>
-          <li>Implied probability & confidence score</li>
-          <li>Stats & context</li>
-          <li>Alternative bet suggestions</li>
-          <li>Sharp verdict</li>
+          <li>20 analyses (50p each)</li>
+          <li>Full AI breakdown</li>
+          <li>Credits never expire</li>
         </ul>
       </div>
     </div>
@@ -1074,31 +1179,101 @@
     </div>
   </footer>
 
+  <!-- EMAIL GATE MODAL -->
   <div class="modal-overlay" id="emailModal">
     <div class="modal">
       <div class="modal-header">
         <div class="modal-title">Unlock Your Analysis</div>
-        <div class="modal-sub">Enter your email to receive your first free analysis.</div>
+        <div class="modal-sub">Enter your email to get 3 free analyses.</div>
       </div>
       <div class="modal-body">
         <div class="form-group">
           <label for="userEmail">Email Address</label>
           <input type="email" id="userEmail" placeholder="your@email.com" />
         </div>
-        <button class="btn-unlock" onclick="submitEmail()">Get My Free Analysis →</button>
+        <button class="btn-unlock" onclick="submitEmail()">Get 3 Free Analyses →</button>
         <div class="modal-note">No spam. No subscription. Just your analysis.</div>
       </div>
     </div>
   </div>
 
+  <!-- PAYMENT MODAL -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Top Up Credits</div>
+        <div class="modal-sub">You've used your 3 free analyses. Choose a plan to continue.</div>
+      </div>
+      <div class="modal-body">
+        <div class="payment-cards">
+          <a class="payment-card" href="https://buy.stripe.com/test_4gMcN68Pibg30aegOLgw000" target="_blank" onclick="trackPayment(1)">
+            <div class="payment-card-price">£1.50</div>
+            <div class="payment-card-desc">Single Analysis</div>
+            <div class="payment-card-detail">One full breakdown</div>
+          </a>
+          <a class="payment-card featured" href="https://buy.stripe.com/test_3cI9AU3uYck72im6a7gw001" target="_blank" onclick="trackPayment(20)">
+            <div class="payment-card-price">£10</div>
+            <div class="payment-card-desc">20 Analyses</div>
+            <div class="payment-card-detail">Just 50p each</div>
+          </a>
+        </div>
+        <div class="modal-note">You'll be redirected to Stripe's secure checkout. Credits added instantly on return.</div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    const FREE_LIMIT = 3;
+    const SINGLE_URL = 'https://buy.stripe.com/test_4gMcN68Pibg30aegOLgw000';
+    const BUNDLE_URL = 'https://buy.stripe.com/test_3cI9AU3uYck72im6a7gw001';
+
     let betData = {};
     let userEmail = localStorage.getItem('stakeiq_email') || null;
-    let hasUsedFree = localStorage.getItem('stakeiq_used_free') === 'true';
+    let freeUsed = parseInt(localStorage.getItem('stakeiq_free_used') || '0');
+    let paidCredits = parseInt(localStorage.getItem('stakeiq_credits') || '0');
 
+    // ── CHECK FOR PAYMENT RETURN ──
+    function checkPaymentReturn() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success') {
+        const credits = parseInt(params.get('credits') || '0');
+        if (credits > 0) {
+          paidCredits += credits;
+          localStorage.setItem('stakeiq_credits', paidCredits);
+          const banner = document.getElementById('successBanner');
+          const bannerText = document.getElementById('successBannerText');
+          bannerText.textContent = `✓ Payment successful — ${credits} ${credits === 1 ? 'analysis' : 'analyses'} added to your account`;
+          banner.classList.add('visible');
+          setTimeout(() => banner.classList.remove('visible'), 5000);
+          window.history.replaceState({}, '', '/');
+        }
+      }
+    }
+
+    // ── UPDATE CREDITS BADGE ──
+    function updateBadge() {
+      const badge = document.getElementById('creditsBadge');
+      const freeLeft = Math.max(0, FREE_LIMIT - freeUsed);
+      const total = freeLeft + paidCredits;
+
+      if (paidCredits > 0) {
+        badge.textContent = `${paidCredits} Credits`;
+        badge.className = 'credits-badge';
+      } else if (freeLeft === 0) {
+        badge.textContent = 'No Credits';
+        badge.className = 'credits-badge none';
+      } else if (freeLeft === 1) {
+        badge.textContent = `${freeLeft} Free Left`;
+        badge.className = 'credits-badge low';
+      } else {
+        badge.textContent = `${freeLeft} Free Left`;
+        badge.className = 'credits-badge';
+      }
+    }
+
+    // ── HANDLE ANALYSE CLICK ──
     function handleAnalyze() {
       const sport = document.getElementById('sport').value;
-      const market = document.getElementById('market').value;
       const event = document.getElementById('event').value.trim();
       const selection = document.getElementById('selection').value.trim();
       const odds = document.getElementById('odds').value.trim();
@@ -1110,7 +1285,7 @@
 
       betData = {
         sport,
-        market: market || 'Not specified',
+        market: document.getElementById('market').value || 'Not specified',
         event,
         selection,
         odds,
@@ -1119,19 +1294,23 @@
         context: document.getElementById('context').value.trim() || ''
       };
 
+      // No email yet
       if (!userEmail) {
         document.getElementById('emailModal').classList.add('active');
         return;
       }
 
-      if (hasUsedFree) {
-        handlePayment();
+      // Check credits
+      const freeLeft = FREE_LIMIT - freeUsed;
+      if (freeLeft <= 0 && paidCredits <= 0) {
+        document.getElementById('paymentModal').classList.add('active');
         return;
       }
 
       runAnalysis();
     }
 
+    // ── EMAIL SUBMIT ──
     function submitEmail() {
       const email = document.getElementById('userEmail').value.trim();
       if (!email || !email.includes('@')) {
@@ -1144,17 +1323,16 @@
       runAnalysis();
     }
 
-    function handlePayment() {
-      // TODO: Replace with your Stripe Payment Link URL
-      alert('Payment integration coming soon!');
-      runAnalysis();
+    // ── TRACK PAYMENT (store intent) ──
+    function trackPayment(credits) {
+      localStorage.setItem('stakeiq_pending_credits', credits);
     }
 
+    // ── RUN ANALYSIS ──
     async function runAnalysis() {
       const btn = document.getElementById('analyzeBtn');
       btn.classList.add('loading');
       btn.innerHTML = '<span class="loader"><span></span><span></span><span></span></span> Analysing...';
-
       document.getElementById('resultPanel').classList.remove('visible');
 
       const prompt = `Please analyse this bet:
@@ -1176,12 +1354,18 @@ Additional context: ${betData.context || 'None provided'}`;
 
         const result = await response.json();
         if (result.error) throw new Error(result.error);
-        displayResult(result);
 
-        if (!hasUsedFree) {
-          hasUsedFree = true;
-          localStorage.setItem('stakeiq_used_free', 'true');
+        // Deduct credit
+        if (paidCredits > 0) {
+          paidCredits--;
+          localStorage.setItem('stakeiq_credits', paidCredits);
+        } else {
+          freeUsed++;
+          localStorage.setItem('stakeiq_free_used', freeUsed);
         }
+
+        updateBadge();
+        displayResult(result);
 
       } catch (err) {
         console.error(err);
@@ -1192,6 +1376,7 @@ Additional context: ${betData.context || 'None provided'}`;
       btn.innerHTML = 'Analyse Another Bet →';
     }
 
+    // ── DISPLAY RESULT ──
     function displayResult(result) {
       const valueEl = document.getElementById('valueRating');
       valueEl.textContent = result.valueRating;
@@ -1228,9 +1413,18 @@ Additional context: ${betData.context || 'None provided'}`;
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Close modals on overlay click
     document.getElementById('emailModal').addEventListener('click', function(e) {
       if (e.target === this) this.classList.remove('active');
     });
+
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+
+    // Init
+    checkPaymentReturn();
+    updateBadge();
   </script>
 </body>
 </html>
