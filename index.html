@@ -375,7 +375,6 @@
     .btn-analyze:active { transform: translateY(0); }
     .btn-analyze.loading { pointer-events: none; opacity: 0.7; }
 
-    /* ── MODALS ── */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -465,7 +464,6 @@
       margin-top: 14px;
     }
 
-    /* ── PAYMENT MODAL ── */
     .payment-cards {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -489,9 +487,7 @@
       box-shadow: 0 0 0 1px rgba(0,229,255,0.15);
     }
 
-    .payment-card.featured {
-      border-color: var(--accent);
-    }
+    .payment-card.featured { border-color: var(--accent); }
 
     .payment-card.featured::before {
       content: 'BEST VALUE';
@@ -527,7 +523,6 @@
       color: var(--text3);
     }
 
-    /* ── RESULT PANEL ── */
     .result-panel {
       margin-top: 24px;
       background: var(--bg2);
@@ -672,7 +667,6 @@
       line-height: 1.7;
     }
 
-    /* ── SUCCESS BANNER ── */
     .success-banner {
       background: rgba(0,230,118,0.1);
       border: 1px solid rgba(0,230,118,0.3);
@@ -1162,7 +1156,7 @@
       <div class="pricing-card featured">
         <div class="price-label featured">Best Value</div>
         <div class="price-amount">£10<span class="price-per">/ 20 analyses</span></div>
-        <p class="price-desc">50p per analysis. Best value for regular bettors.</p>
+        <p class="price-desc">Just 50p per analysis. Best value for regular bettors.</p>
         <ul class="price-features">
           <li>20 analyses (50p each)</li>
           <li>Full AI breakdown</li>
@@ -1206,12 +1200,12 @@
       </div>
       <div class="modal-body">
         <div class="payment-cards">
-          <a class="payment-card" href="https://buy.stripe.com/test_4gMcN68Pibg30aegOLgw000" target="_blank" onclick="trackPayment(1)">
+          <a class="payment-card" href="https://buy.stripe.com/eVq00kbXP295bnacgRcbC01" target="_blank">
             <div class="payment-card-price">£1.50</div>
             <div class="payment-card-desc">Single Analysis</div>
             <div class="payment-card-detail">One full breakdown</div>
           </a>
-          <a class="payment-card featured" href="https://buy.stripe.com/test_3cI9AU3uYck72im6a7gw001" target="_blank" onclick="trackPayment(20)">
+          <a class="payment-card featured" href="https://buy.stripe.com/9B64gA3rj8xt8aYgx7cbC00" target="_blank">
             <div class="payment-card-price">£10</div>
             <div class="payment-card-desc">20 Analyses</div>
             <div class="payment-card-detail">Just 50p each</div>
@@ -1224,15 +1218,14 @@
 
   <script>
     const FREE_LIMIT = 3;
-    const SINGLE_URL = 'https://buy.stripe.com/test_4gMcN68Pibg30aegOLgw000';
-    const BUNDLE_URL = 'https://buy.stripe.com/test_3cI9AU3uYck72im6a7gw001';
+    const SINGLE_URL = 'https://buy.stripe.com/eVq00kbXP295bnacgRcbC01';
+    const BUNDLE_URL = 'https://buy.stripe.com/9B64gA3rj8xt8aYgx7cbC00';
 
     let betData = {};
     let userEmail = localStorage.getItem('stakeiq_email') || null;
     let freeUsed = parseInt(localStorage.getItem('stakeiq_free_used') || '0');
     let paidCredits = parseInt(localStorage.getItem('stakeiq_credits') || '0');
 
-    // ── CHECK FOR PAYMENT RETURN ──
     function checkPaymentReturn() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('payment') === 'success') {
@@ -1250,11 +1243,9 @@
       }
     }
 
-    // ── UPDATE CREDITS BADGE ──
     function updateBadge() {
       const badge = document.getElementById('creditsBadge');
       const freeLeft = Math.max(0, FREE_LIMIT - freeUsed);
-      const total = freeLeft + paidCredits;
 
       if (paidCredits > 0) {
         badge.textContent = `${paidCredits} Credits`;
@@ -1271,7 +1262,6 @@
       }
     }
 
-    // ── HANDLE ANALYSE CLICK ──
     function handleAnalyze() {
       const sport = document.getElementById('sport').value;
       const event = document.getElementById('event').value.trim();
@@ -1294,13 +1284,11 @@
         context: document.getElementById('context').value.trim() || ''
       };
 
-      // No email yet
       if (!userEmail) {
         document.getElementById('emailModal').classList.add('active');
         return;
       }
 
-      // Check credits
       const freeLeft = FREE_LIMIT - freeUsed;
       if (freeLeft <= 0 && paidCredits <= 0) {
         document.getElementById('paymentModal').classList.add('active');
@@ -1310,7 +1298,6 @@
       runAnalysis();
     }
 
-    // ── EMAIL SUBMIT ──
     function submitEmail() {
       const email = document.getElementById('userEmail').value.trim();
       if (!email || !email.includes('@')) {
@@ -1323,12 +1310,6 @@
       runAnalysis();
     }
 
-    // ── TRACK PAYMENT (store intent) ──
-    function trackPayment(credits) {
-      localStorage.setItem('stakeiq_pending_credits', credits);
-    }
-
-    // ── RUN ANALYSIS ──
     async function runAnalysis() {
       const btn = document.getElementById('analyzeBtn');
       btn.classList.add('loading');
@@ -1355,7 +1336,6 @@ Additional context: ${betData.context || 'None provided'}`;
         const result = await response.json();
         if (result.error) throw new Error(result.error);
 
-        // Deduct credit
         if (paidCredits > 0) {
           paidCredits--;
           localStorage.setItem('stakeiq_credits', paidCredits);
@@ -1376,7 +1356,6 @@ Additional context: ${betData.context || 'None provided'}`;
       btn.innerHTML = 'Analyse Another Bet →';
     }
 
-    // ── DISPLAY RESULT ──
     function displayResult(result) {
       const valueEl = document.getElementById('valueRating');
       valueEl.textContent = result.valueRating;
@@ -1413,7 +1392,6 @@ Additional context: ${betData.context || 'None provided'}`;
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Close modals on overlay click
     document.getElementById('emailModal').addEventListener('click', function(e) {
       if (e.target === this) this.classList.remove('active');
     });
@@ -1422,7 +1400,6 @@ Additional context: ${betData.context || 'None provided'}`;
       if (e.target === this) this.classList.remove('active');
     });
 
-    // Init
     checkPaymentReturn();
     updateBadge();
   </script>
