@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
 <script defer src="/_vercel/insights/script.js"></script>
-</head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StakeIQ — AI Bet Analysis</title>
@@ -434,27 +434,6 @@
 
     .modal-body { padding: 28px 32px 32px; }
     .modal-body .form-group { margin-bottom: 16px; }
-
-    .btn-unlock {
-      width: 100%;
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      font-family: var(--display);
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 8px;
-    }
-
-    .btn-unlock:hover {
-      background: var(--accent2);
-      box-shadow: 0 6px 24px rgba(0,229,255,0.2);
-    }
 
     .modal-note {
       font-family: var(--mono);
@@ -1174,24 +1153,6 @@
     </div>
   </footer>
 
-  <!-- EMAIL GATE MODAL -->
-  <div class="modal-overlay" id="emailModal">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Unlock Your Analysis</div>
-        <div class="modal-sub">Enter your email to get 3 free analyses.</div>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="userEmail">Email Address</label>
-          <input type="email" id="userEmail" placeholder="your@email.com" />
-        </div>
-        <button class="btn-unlock" onclick="submitEmail()">Get 3 Free Analyses →</button>
-        <div class="modal-note">No spam. No subscription. Just your analysis.</div>
-      </div>
-    </div>
-  </div>
-
   <!-- PAYMENT MODAL -->
   <div class="modal-overlay" id="paymentModal">
     <div class="modal">
@@ -1223,7 +1184,6 @@
     const BUNDLE_URL = 'https://buy.stripe.com/9B64gA3rj8xt8aYgx7cbC00';
 
     let betData = {};
-    let userEmail = localStorage.getItem('stakeiq_email') || null;
     let freeUsed = parseInt(localStorage.getItem('stakeiq_free_used') || '0');
     let paidCredits = parseInt(localStorage.getItem('stakeiq_credits') || '0');
 
@@ -1285,29 +1245,12 @@
         context: document.getElementById('context').value.trim() || ''
       };
 
-      if (!userEmail) {
-        document.getElementById('emailModal').classList.add('active');
-        return;
-      }
-
       const freeLeft = FREE_LIMIT - freeUsed;
       if (freeLeft <= 0 && paidCredits <= 0) {
         document.getElementById('paymentModal').classList.add('active');
         return;
       }
 
-      runAnalysis();
-    }
-
-    function submitEmail() {
-      const email = document.getElementById('userEmail').value.trim();
-      if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-      userEmail = email;
-      localStorage.setItem('stakeiq_email', email);
-      document.getElementById('emailModal').classList.remove('active');
       runAnalysis();
     }
 
@@ -1392,10 +1335,6 @@ Additional context: ${betData.context || 'None provided'}`;
       panel.classList.add('visible');
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-
-    document.getElementById('emailModal').addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('active');
-    });
 
     document.getElementById('paymentModal').addEventListener('click', function(e) {
       if (e.target === this) this.classList.remove('active');
